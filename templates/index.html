@@ -1,0 +1,519 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Decoded Intelligence — Institutional Q-Day Risk Engine V7</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+<div class="wrap">
+
+<header>
+<b>DECODED INTELLIGENCE | INSTITUTIONAL RISK RESEARCH</b>
+<span>V7 · LIVE DATA ENGINE</span>
+</header>
+
+<section id="home" class="hero">
+<div class="ey">U.S. TIER-1 FIRST · GLOBAL FRAMEWORK</div>
+<h1>Assess the institution. See the evidence. Stress the risk.</h1>
+<p>Enter a U.S. public institution. The engine retrieves real SEC public financial data through the server, then lets you add the internal data that public sources cannot establish.</p>
+
+<div class="search">
+<input id="q" placeholder="JPMorgan Chase / JPM">
+<button onclick="research()">Start assessment</button>
+</div>
+
+<div class="hint">No fabricated fallback data. If live data cannot be verified, the engine says so.</div>
+</section>
+
+<section id="loading" class="panel hidden">
+<div class="loader"></div>
+<h2>Researching institution</h2>
+<p id="progress">Identifying the institution through public SEC data...</p>
+</section>
+
+<section id="error" class="panel hidden">
+<div class="status bad">RESEARCH FAILED</div>
+<h2 id="errorTitle">No reliable public match</h2>
+<p id="errorText"></p>
+<button onclick="resetHome()">Try another institution</button>
+</section>
+
+<section id="results" class="hidden">
+
+<section class="profile">
+<div>
+<div class="ey">INSTITUTIONAL PROFILE</div>
+<h2 id="companyName">—</h2>
+<p id="companyMeta">—</p>
+</div>
+
+<div class="verification">
+<div class="status good">PUBLIC DATA VERIFIED</div>
+<p>SEC public-company data retrieved server-side.</p>
+</div>
+</section>
+
+<section class="grid">
+
+<div class="card">
+<div class="label">TOTAL ASSETS</div>
+<div class="big" id="assets">UNKNOWN</div>
+<div class="muted">Latest SEC-reported value</div>
+</div>
+
+<div class="card">
+<div class="label">REVENUE</div>
+<div class="big" id="revenue">UNKNOWN</div>
+<div class="muted">Latest SEC-reported value</div>
+</div>
+
+<div class="card">
+<div class="label">NET INCOME</div>
+<div class="big" id="income">UNKNOWN</div>
+<div class="muted">Latest SEC-reported value</div>
+</div>
+
+<div class="card">
+<div class="label">EQUITY</div>
+<div class="big" id="equity">UNKNOWN</div>
+<div class="muted">Latest SEC-reported value</div>
+</div>
+
+</section>
+
+<section class="panel">
+<div class="ey">EVIDENCE STATUS</div>
+<h2>What public data establishes — and what it does not</h2>
+
+<div class="evidence-grid">
+
+<div class="evidence verified">
+<strong>VERIFIED</strong>
+<ul>
+<li>Institution identity</li>
+<li>SEC CIK / ticker</li>
+<li>Public financial facts returned by SEC</li>
+<li>Source endpoint used by the engine</li>
+</ul>
+</div>
+
+<div class="evidence unknown">
+<strong>UNKNOWN / CLIENT INPUT REQUIRED</strong>
+<ul>
+<li>Internal RSA / ECC inventory</li>
+<li>PKI architecture</li>
+<li>HSM inventory and configuration</li>
+<li>HNDL exposure</li>
+<li>PQC migration status</li>
+<li>Vendor-specific cryptographic dependencies</li>
+</ul>
+</div>
+
+</div>
+</section>
+
+<section class="panel">
+<div class="ey">QUANTITATIVE STRESS ENGINE</div>
+<h2>Translate migration exposure into financial risk</h2>
+
+<div class="inputs">
+
+<label>
+Legacy Asset Value
+<input id="legacy" type="number" min="0" placeholder="Enter value">
+</label>
+
+<label>
+Annual Migration Speed %
+<input id="migration" type="number" min="0" max="100" placeholder="0–100">
+</label>
+
+<label>
+Active Threat Vector
+<input id="threat" type="number" min="0" max="1" step="0.01" placeholder="0–1">
+</label>
+
+<label>
+Event Probability %
+<input id="event" type="number" min="0" max="100" placeholder="0–100">
+</label>
+
+<label>
+Loss Rate %
+<input id="lossrate" type="number" min="0" max="100" placeholder="0–100">
+</label>
+
+<label>
+Annual CapEx
+<input id="capex" type="number" min="0" placeholder="Optional">
+</label>
+
+<label>
+Emergency CapEx Factor
+<input id="emergency" type="number" min="0" placeholder="Optional">
+</label>
+
+<label>
+Shares Outstanding
+<input id="shares" type="number" min="0" placeholder="Optional">
+</label>
+
+<label>
+Tax Rate %
+<input id="tax" type="number" min="0" max="100" placeholder="Optional">
+</label>
+
+</div>
+
+<button onclick="calculate()">Calculate institutional stress</button>
+
+<div id="calcError" class="error hidden"></div>
+
+<div class="table-wrap">
+<table id="stressTable">
+<thead>
+<tr>
+<th>Year</th>
+<th>Residual Exposure</th>
+<th>Expected Loss</th>
+<th>Risk Score</th>
+<th>Emergency CapEx</th>
+<th>EPS Sensitivity</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+</table>
+</div>
+
+</section>
+
+<section class="panel">
+<div class="ey">AUDIT TRAIL</div>
+<h2>Public sources used</h2>
+
+<div id="sources"></div>
+
+<p class="muted">
+Public financial evidence is source-derived. Internal cybersecurity,
+cryptographic, PKI, HSM, HNDL and PQC readiness information is not inferred
+from financial filings.
+</p>
+</section>
+
+<section class="panel">
+<div class="ey">RESEARCH INTEGRITY</div>
+
+<div class="integrity">
+<div>
+<strong>NO FABRICATED DATA</strong>
+<p>
+The engine does not generate random company values when public evidence is
+missing.
+</p>
+</div>
+
+<div>
+<strong>PUBLIC ≠ INTERNAL</strong>
+<p>
+SEC financial information cannot establish an institution's internal
+cryptographic architecture.
+</p>
+</div>
+
+<div>
+<strong>CLIENT DATA CAN OVERRIDE</strong>
+<p>
+Institution-provided evidence can be entered into the stress engine for a
+more specific assessment.
+</p>
+</div>
+</div>
+</section>
+
+</section>
+
+<footer>
+DECODED INTELLIGENCE · INSTITUTIONAL Q-DAY RISK ENGINE V7
+</footer>
+
+</div>
+
+<script>
+
+let currentCompany = null;
+
+function $(id){
+    return document.getElementById(id);
+}
+
+function show(id){
+    $(id).classList.remove("hidden");
+}
+
+function hide(id){
+    $(id).classList.add("hidden");
+}
+
+function money(v){
+    if(v === null || v === undefined || Number.isNaN(Number(v))){
+        return "UNKNOWN";
+    }
+
+    const n = Number(v);
+
+    if(Math.abs(n) >= 1000000){
+        return "$" + (n / 1000000).toFixed(2) + "T";
+    }
+
+    if(Math.abs(n) >= 1000){
+        return "$" + (n / 1000).toFixed(2) + "B";
+    }
+
+    return "$" + n.toFixed(2) + "M";
+}
+
+function percent(v){
+    if(v === null || v === undefined || Number.isNaN(Number(v))){
+        return "UNKNOWN";
+    }
+
+    return Number(v).toFixed(1) + "%";
+}
+
+function formatFact(f){
+    if(!f || f.value === null || f.value === undefined){
+        return "UNKNOWN";
+    }
+
+    return money(f.value);
+}
+
+async function research(){
+
+    const q = $("q").value.trim();
+
+    if(!q){
+        alert("Enter an institution name or ticker.");
+        return;
+    }
+
+    hide("home");
+    hide("results");
+    hide("error");
+    show("loading");
+
+    $("progress").textContent =
+        "Identifying the institution through public SEC data...";
+
+    try{
+
+        const response = await fetch("/api/company", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                query: q
+            })
+        });
+
+        const data = await response.json();
+
+        if(!response.ok || !data.ok){
+            throw new Error(
+                data.error ||
+                "No reliable public SEC match found."
+            );
+        }
+
+        currentCompany = data;
+
+        renderCompany(data);
+
+        hide("loading");
+        show("results");
+
+    }catch(err){
+
+        hide("loading");
+
+        $("errorTitle").textContent =
+            "No reliable public match/data was found";
+
+        $("errorText").textContent =
+            err.message ||
+            "Live public-data retrieval failed. Nothing has been invented.";
+
+        show("error");
+    }
+}
+
+function renderCompany(data){
+
+    const id = data.identity || {};
+    const f = data.financial || {};
+
+    $("companyName").textContent =
+        id.name || "UNKNOWN";
+
+    $("companyMeta").textContent =
+        "Ticker: " +
+        (id.ticker || "UNKNOWN") +
+        " · CIK: " +
+        (id.cik || "UNKNOWN");
+
+    $("assets").textContent =
+        formatFact(f.assets);
+
+    $("revenue").textContent =
+        formatFact(f.revenue);
+
+    $("income").textContent =
+        formatFact(f.net_income);
+
+    $("equity").textContent =
+        formatFact(f.equity);
+
+    const sourceBox = $("sources");
+
+    sourceBox.innerHTML = "";
+
+    (data.sources || []).forEach(src => {
+
+        const div = document.createElement("div");
+
+        div.className = "source";
+
+        const a = document.createElement("a");
+
+        a.href = src.url;
+
+        a.target = "_blank";
+
+        a.rel = "noopener noreferrer";
+
+        a.textContent = src.name;
+
+        div.appendChild(a);
+
+        sourceBox.appendChild(div);
+    });
+}
+
+async function calculate(){
+
+    hide("calcError");
+
+    const legacy = Number($("legacy").value);
+    const migration = Number($("migration").value);
+    const threat = Number($("threat").value);
+    const event = Number($("event").value);
+    const lossrate = Number($("lossrate").value);
+
+    if(
+        !Number.isFinite(legacy) ||
+        !Number.isFinite(migration) ||
+        !Number.isFinite(threat) ||
+        !Number.isFinite(event) ||
+        !Number.isFinite(lossrate)
+    ){
+
+        $("calcError").textContent =
+            "Please enter all required stress-engine inputs.";
+
+        show("calcError");
+
+        return;
+    }
+
+    const payload = {
+        legacy: legacy,
+        migration: migration,
+        threat: threat,
+        event_probability: event,
+        loss_rate: lossrate,
+
+        capex: $("capex").value || null,
+        emergency: $("emergency").value || null,
+        shares: $("shares").value || null,
+        tax: $("tax").value || null
+    };
+
+    try{
+
+        const response = await fetch("/api/calculate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if(!response.ok || !data.ok){
+            throw new Error(
+                data.error ||
+                "Calculation failed."
+            );
+        }
+
+        renderStress(data.rows || []);
+
+    }catch(err){
+
+        $("calcError").textContent =
+            err.message ||
+            "Calculation failed.";
+
+        show("calcError");
+    }
+}
+
+function renderStress(rows){
+
+    const tbody =
+        $("stressTable").querySelector("tbody");
+
+    tbody.innerHTML = "";
+
+    rows.forEach(row => {
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${row.year}</td>
+            <td>${money(row.residual)}</td>
+            <td>${money(row.expected_loss)}</td>
+            <td>${percent(row.risk)}</td>
+            <td>${row.emergency_capex === null || row.emergency_capex === undefined
+                ? "UNKNOWN"
+                : money(row.emergency_capex)}</td>
+            <td>${row.eps === null || row.eps === undefined
+                ? "UNKNOWN"
+                : "$" + Number(row.eps).toFixed(4)}</td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+function resetHome(){
+
+    hide("error");
+    hide("loading");
+    hide("results");
+
+    show("home");
+
+    $("q").focus();
+}
+
+</script>
+
+</body>
+  </html>
