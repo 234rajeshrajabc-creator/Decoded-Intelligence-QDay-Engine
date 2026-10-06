@@ -1,519 +1,961 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Decoded Intelligence — Institutional Q-Day Risk Engine V7</title>
-<link rel="stylesheet" href="/static/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decoded Intelligence | Q-Day Risk Engine</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-<div class="wrap">
 
-<header>
-<b>DECODED INTELLIGENCE | INSTITUTIONAL RISK RESEARCH</b>
-<span>V7 · LIVE DATA ENGINE</span>
+<header class="header">
+  <div class="container">
+    <div class="brand">DECODED INTELLIGENCE | INSTITUTIONAL RISK RESEARCH</div>
+    <h1 class="title">Q-Day Cryptographic Risk Engine</h1>
+    <p class="subtitle">
+      Institution-specific public-data assessment for quantum exposure,
+      migration readiness and financial stress testing.
+    </p>
+  </div>
 </header>
 
-<section id="home" class="hero">
-<div class="ey">U.S. TIER-1 FIRST · GLOBAL FRAMEWORK</div>
-<h1>Assess the institution. See the evidence. Stress the risk.</h1>
-<p>Enter a U.S. public institution. The engine retrieves real SEC public financial data through the server, then lets you add the internal data that public sources cannot establish.</p>
+<main class="container">
 
-<div class="search">
-<input id="q" placeholder="JPMorgan Chase / JPM">
-<button onclick="research()">Start assessment</button>
-</div>
+  <!-- SEARCH -->
+  <section class="card">
+    <div class="section-title">
+      <span class="section-number">01</span>
+      <h2>Institution Identification</h2>
+    </div>
 
-<div class="hint">No fabricated fallback data. If live data cannot be verified, the engine says so.</div>
-</section>
+    <p class="muted">
+      Enter any U.S. public company name or ticker. The engine will attempt
+      to identify it through authoritative SEC public data.
+    </p>
 
-<section id="loading" class="panel hidden">
-<div class="loader"></div>
-<h2>Researching institution</h2>
-<p id="progress">Identifying the institution through public SEC data...</p>
-</section>
+    <div class="grid">
+      <div>
+        <label for="company">Institution / Company / Ticker</label>
+        <input
+          id="company"
+          type="text"
+          placeholder="Example: JPMorgan Chase or JPM"
+          autocomplete="off">
+      </div>
 
-<section id="error" class="panel hidden">
-<div class="status bad">RESEARCH FAILED</div>
-<h2 id="errorTitle">No reliable public match</h2>
-<p id="errorText"></p>
-<button onclick="resetHome()">Try another institution</button>
-</section>
+      <div style="display:flex;align-items:end;">
+        <button class="btn btn-primary" id="researchBtn" onclick="researchCompany()">
+          Research Institution
+        </button>
+      </div>
+    </div>
 
-<section id="results" class="hidden">
+    <div id="status" class="notice" style="display:none;margin-top:18px;"></div>
+  </section>
 
-<section class="profile">
-<div>
-<div class="ey">INSTITUTIONAL PROFILE</div>
-<h2 id="companyName">—</h2>
-<p id="companyMeta">—</p>
-</div>
 
-<div class="verification">
-<div class="status good">PUBLIC DATA VERIFIED</div>
-<p>SEC public-company data retrieved server-side.</p>
-</div>
-</section>
+  <!-- PROFILE -->
+  <section id="profileSection" class="card hidden">
 
-<section class="grid">
+    <div class="section-title">
+      <span class="section-number">02</span>
+      <h2>Institutional Profile</h2>
+    </div>
 
-<div class="card">
-<div class="label">TOTAL ASSETS</div>
-<div class="big" id="assets">UNKNOWN</div>
-<div class="muted">Latest SEC-reported value</div>
-</div>
+    <div class="grid-3">
 
-<div class="card">
-<div class="label">REVENUE</div>
-<div class="big" id="revenue">UNKNOWN</div>
-<div class="muted">Latest SEC-reported value</div>
-</div>
+      <div class="metric">
+        <div class="metric-label">Institution</div>
+        <div class="metric-value" id="companyName">UNKNOWN</div>
+      </div>
 
-<div class="card">
-<div class="label">NET INCOME</div>
-<div class="big" id="income">UNKNOWN</div>
-<div class="muted">Latest SEC-reported value</div>
-</div>
+      <div class="metric">
+        <div class="metric-label">Ticker</div>
+        <div class="metric-value" id="ticker">UNKNOWN</div>
+      </div>
 
-<div class="card">
-<div class="label">EQUITY</div>
-<div class="big" id="equity">UNKNOWN</div>
-<div class="muted">Latest SEC-reported value</div>
-</div>
+      <div class="metric">
+        <div class="metric-label">SEC CIK</div>
+        <div class="metric-value" id="cik">UNKNOWN</div>
+      </div>
 
-</section>
+    </div>
 
-<section class="panel">
-<div class="ey">EVIDENCE STATUS</div>
-<h2>What public data establishes — and what it does not</h2>
+    <div style="margin-top:18px;">
+      <span class="badge badge-blue">PUBLIC EVIDENCE</span>
+      <span id="evidenceText" class="muted">
+        SEC public-data identification attempted.
+      </span>
+    </div>
 
-<div class="evidence-grid">
+  </section>
 
-<div class="evidence verified">
-<strong>VERIFIED</strong>
-<ul>
-<li>Institution identity</li>
-<li>SEC CIK / ticker</li>
-<li>Public financial facts returned by SEC</li>
-<li>Source endpoint used by the engine</li>
-</ul>
-</div>
 
-<div class="evidence unknown">
-<strong>UNKNOWN / CLIENT INPUT REQUIRED</strong>
-<ul>
-<li>Internal RSA / ECC inventory</li>
-<li>PKI architecture</li>
-<li>HSM inventory and configuration</li>
-<li>HNDL exposure</li>
-<li>PQC migration status</li>
-<li>Vendor-specific cryptographic dependencies</li>
-</ul>
-</div>
+  <!-- FINANCIAL DATA -->
+  <section id="financialSection" class="card hidden">
 
-</div>
-</section>
+    <div class="section-title">
+      <span class="section-number">03</span>
+      <h2>Public Financial Evidence</h2>
+    </div>
 
-<section class="panel">
-<div class="ey">QUANTITATIVE STRESS ENGINE</div>
-<h2>Translate migration exposure into financial risk</h2>
+    <div class="grid-3">
 
-<div class="inputs">
+      <div class="metric">
+        <div class="metric-label">Total Assets</div>
+        <div class="metric-value" id="assets">UNKNOWN</div>
+      </div>
 
-<label>
-Legacy Asset Value
-<input id="legacy" type="number" min="0" placeholder="Enter value">
-</label>
+      <div class="metric">
+        <div class="metric-label">Revenue</div>
+        <div class="metric-value" id="revenue">UNKNOWN</div>
+      </div>
 
-<label>
-Annual Migration Speed %
-<input id="migration" type="number" min="0" max="100" placeholder="0–100">
-</label>
+      <div class="metric">
+        <div class="metric-label">Net Income</div>
+        <div class="metric-value" id="netIncome">UNKNOWN</div>
+      </div>
 
-<label>
-Active Threat Vector
-<input id="threat" type="number" min="0" max="1" step="0.01" placeholder="0–1">
-</label>
+    </div>
 
-<label>
-Event Probability %
-<input id="event" type="number" min="0" max="100" placeholder="0–100">
-</label>
+    <p class="muted" style="margin-top:18px;">
+      These values are public-data observations where available.
+      They are not estimates of internal cryptographic exposure.
+    </p>
 
-<label>
-Loss Rate %
-<input id="lossrate" type="number" min="0" max="100" placeholder="0–100">
-</label>
+  </section>
 
-<label>
-Annual CapEx
-<input id="capex" type="number" min="0" placeholder="Optional">
-</label>
 
-<label>
-Emergency CapEx Factor
-<input id="emergency" type="number" min="0" placeholder="Optional">
-</label>
+  <!-- RISK INPUTS -->
+  <section id="riskSection" class="card hidden">
 
-<label>
-Shares Outstanding
-<input id="shares" type="number" min="0" placeholder="Optional">
-</label>
+    <div class="section-title">
+      <span class="section-number">04</span>
+      <h2>Institution-Specific Risk Inputs</h2>
+    </div>
 
-<label>
-Tax Rate %
-<input id="tax" type="number" min="0" max="100" placeholder="Optional">
-</label>
+    <div class="notice">
+      Do not enter invented values. Use validated internal data where
+      available. If a value is unknown, leave it blank.
+    </div>
 
-</div>
+    <div class="grid" style="margin-top:20px;">
 
-<button onclick="calculate()">Calculate institutional stress</button>
+      <div>
+        <label for="legacyAssetValue">
+          Legacy Asset Value
+        </label>
+        <input
+          id="legacyAssetValue"
+          type="number"
+          min="0"
+          step="any"
+          placeholder="Enter validated value">
+      </div>
 
-<div id="calcError" class="error hidden"></div>
+      <div>
+        <label for="migrationSpeed">
+          Annual Migration Speed (%)
+        </label>
+        <input
+          id="migrationSpeed"
+          type="number"
+          min="0"
+          max="100"
+          step="0.1"
+          placeholder="Example: 20">
+      </div>
 
-<div class="table-wrap">
-<table id="stressTable">
-<thead>
-<tr>
-<th>Year</th>
-<th>Residual Exposure</th>
-<th>Expected Loss</th>
-<th>Risk Score</th>
-<th>Emergency CapEx</th>
-<th>EPS Sensitivity</th>
-</tr>
-</thead>
+      <div>
+        <label for="threatVector">
+          Active Threat Vector (0–1)
+        </label>
+        <input
+          id="threatVector"
+          type="number"
+          min="0"
+          max="1"
+          step="0.01"
+          placeholder="Example: 0.70">
+      </div>
 
-<tbody></tbody>
-</table>
-</div>
+      <div>
+        <label for="annualLoss">
+          Annual Loss Exposure
+        </label>
+        <input
+          id="annualLoss"
+          type="number"
+          min="0"
+          step="any"
+          placeholder="Validated/model input">
+      </div>
 
-</section>
+    </div>
 
-<section class="panel">
-<div class="ey">AUDIT TRAIL</div>
-<h2>Public sources used</h2>
+    <div style="margin-top:20px;">
+      <button class="btn btn-primary" onclick="calculateRisk()">
+        Calculate Risk
+      </button>
+    </div>
 
-<div id="sources"></div>
+  </section>
 
-<p class="muted">
-Public financial evidence is source-derived. Internal cybersecurity,
-cryptographic, PKI, HSM, HNDL and PQC readiness information is not inferred
-from financial filings.
-</p>
-</section>
 
-<section class="panel">
-<div class="ey">RESEARCH INTEGRITY</div>
+  <!-- RISK DASHBOARD -->
+  <section id="dashboardSection" class="card hidden">
 
-<div class="integrity">
-<div>
-<strong>NO FABRICATED DATA</strong>
-<p>
-The engine does not generate random company values when public evidence is
-missing.
-</p>
-</div>
+    <div class="section-title">
+      <span class="section-number">05</span>
+      <h2>Q-Day Risk Dashboard</h2>
+    </div>
 
-<div>
-<strong>PUBLIC ≠ INTERNAL</strong>
-<p>
-SEC financial information cannot establish an institution's internal
-cryptographic architecture.
-</p>
-</div>
+    <div class="grid-3">
 
-<div>
-<strong>CLIENT DATA CAN OVERRIDE</strong>
-<p>
-Institution-provided evidence can be entered into the stress engine for a
-more specific assessment.
-</p>
-</div>
-</div>
-</section>
+      <div class="metric">
+        <div class="metric-label">2026 Risk Score</div>
+        <div class="metric-value" id="risk2026">UNKNOWN</div>
+      </div>
 
-</section>
+      <div class="metric">
+        <div class="metric-label">2030 Risk Score</div>
+        <div class="metric-value" id="risk2030">UNKNOWN</div>
+      </div>
 
-<footer>
-DECODED INTELLIGENCE · INSTITUTIONAL Q-DAY RISK ENGINE V7
-</footer>
+      <div class="metric">
+        <div class="metric-label">Expected Loss</div>
+        <div class="metric-value" id="expectedLoss">UNKNOWN</div>
+      </div>
 
-</div>
+    </div>
+
+    <div class="table-wrap" style="margin-top:25px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Residual Exposure</th>
+            <th>Residual Ratio</th>
+            <th>Risk Score</th>
+          </tr>
+        </thead>
+
+        <tbody id="riskTable">
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+
+  <!-- FINANCIAL TRANSLATION -->
+  <section id="financialStressSection" class="card hidden">
+
+    <div class="section-title">
+      <span class="section-number">06</span>
+      <h2>Financial Stress Translation</h2>
+    </div>
+
+    <div class="grid-3">
+
+      <div class="metric">
+        <div class="metric-label">Expected Loss</div>
+        <div class="metric-value" id="stressLoss">UNKNOWN</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-label">Emergency CapEx</div>
+        <div class="metric-value" id="emergencyCapex">UNKNOWN</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-label">EPS Sensitivity</div>
+        <div class="metric-value" id="epsSensitivity">UNKNOWN</div>
+      </div>
+
+    </div>
+
+    <p class="muted" style="margin-top:18px;">
+      Financial outputs are model outputs based on supplied inputs.
+      They are not market forecasts.
+    </p>
+
+  </section>
+
+
+  <!-- CRYPTO POSTURE -->
+  <section class="card">
+
+    <div class="section-title">
+      <span class="section-number">07</span>
+      <h2>Cryptographic Readiness Posture</h2>
+    </div>
+
+    <div class="grid">
+
+      <div class="notice">
+        <strong>RSA / ECC Exposure</strong><br>
+        <span class="muted">
+          Institution-specific inventory required.
+          Public financial filings do not establish internal cryptographic inventory.
+        </span>
+      </div>
+
+      <div class="notice">
+        <strong>HNDL Exposure</strong><br>
+        <span class="muted">
+          Conditional. Depends on confidentiality lifetime,
+          key establishment, retention and migration architecture.
+        </span>
+      </div>
+
+      <div class="notice">
+        <strong>PQC Readiness</strong><br>
+        <span class="muted">
+          Not inferred from financial filings. Requires technical evidence.
+        </span>
+      </div>
+
+      <div class="notice">
+        <strong>SWIFT / Payment Infrastructure</strong><br>
+        <span class="muted">
+          Institution-specific architecture and interoperability evidence required.
+        </span>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- EVIDENCE -->
+  <section id="evidenceSection" class="card hidden">
+
+    <div class="section-title">
+      <span class="section-number">08</span>
+      <h2>Evidence & Data Classification</h2>
+    </div>
+
+    <div class="grid">
+
+      <div>
+        <span class="badge badge-green">VERIFIED / PUBLIC</span>
+        <p class="muted">
+          Data retrieved from authoritative public sources.
+        </p>
+      </div>
+
+      <div>
+        <span class="badge badge-blue">MODEL OUTPUT</span>
+        <p class="muted">
+          Deterministic calculations generated from supplied inputs.
+        </p>
+      </div>
+
+      <div>
+        <span class="badge badge-blue">CLIENT INPUT</span>
+        <p class="muted">
+          Data supplied by the institution or authorized user.
+        </p>
+      </div>
+
+      <div>
+        <span class="badge badge-red">UNKNOWN</span>
+        <p class="muted">
+          No reliable public evidence was found. No value is invented.
+        </p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- METHODOLOGY -->
+  <section class="card">
+
+    <div class="section-title">
+      <span class="section-number">09</span>
+      <h2>Methodology</h2>
+    </div>
+
+    <p>
+      Quantum readiness is treated as a dependency-chain problem rather
+      than an algorithm replacement exercise.
+    </p>
+
+    <div class="notice">
+      <strong>
+        Quantum Readiness =
+        min(Crypto, PKI, HSM, Certificate, Static Data,
+        Vendor, Interoperability, Archive)
+      </strong>
+    </div>
+
+    <p class="muted" style="margin-top:16px;">
+      The engine is a scenario and decision-support framework.
+      It does not predict the date of Q-Day.
+    </p>
+
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div>
+      DECODED INTELLIGENCE | INSTITUTIONAL RISK RESEARCH
+    </div>
+    <div style="margin-top:7px;">
+      Q-Day Cryptographic Horizon 2026–2030
+    </div>
+    <div style="margin-top:7px;">
+      Research tool • Evidence-led • Scenario-based
+    </div>
+  </footer>
+
+</main>
+
 
 <script>
 
 let currentCompany = null;
 
-function $(id){
-    return document.getElementById(id);
+
+/* ---------------------------------------------------------
+   HELPERS
+--------------------------------------------------------- */
+
+function showStatus(message, type = "info") {
+
+  const box = document.getElementById("status");
+
+  box.style.display = "block";
+  box.textContent = message;
+
+  if (type === "error") {
+    box.style.borderLeftColor = "#ef7272";
+  } else {
+    box.style.borderLeftColor = "#e9c46a";
+  }
 }
 
-function show(id){
-    $(id).classList.remove("hidden");
+
+function show(id) {
+  document.getElementById(id).classList.remove("hidden");
 }
 
-function hide(id){
-    $(id).classList.add("hidden");
+
+function money(value) {
+
+  if (value === null || value === undefined || value === "") {
+    return "UNKNOWN";
+  }
+
+  const n = Number(value);
+
+  if (!Number.isFinite(n)) {
+    return "UNKNOWN";
+  }
+
+  if (Math.abs(n) >= 1e12) {
+    return "$" + (n / 1e12).toFixed(2) + "T";
+  }
+
+  if (Math.abs(n) >= 1e9) {
+    return "$" + (n / 1e9).toFixed(2) + "B";
+  }
+
+  if (Math.abs(n) >= 1e6) {
+    return "$" + (n / 1e6).toFixed(2) + "M";
+  }
+
+  return "$" + n.toLocaleString();
 }
 
-function money(v){
-    if(v === null || v === undefined || Number.isNaN(Number(v))){
-        return "UNKNOWN";
-    }
 
-    const n = Number(v);
+function numberValue(id) {
 
-    if(Math.abs(n) >= 1000000){
-        return "$" + (n / 1000000).toFixed(2) + "T";
-    }
+  const value = document.getElementById(id).value;
 
-    if(Math.abs(n) >= 1000){
-        return "$" + (n / 1000).toFixed(2) + "B";
-    }
+  if (value === "") {
+    return null;
+  }
 
-    return "$" + n.toFixed(2) + "M";
+  const n = Number(value);
+
+  return Number.isFinite(n) ? n : null;
 }
 
-function percent(v){
-    if(v === null || v === undefined || Number.isNaN(Number(v))){
-        return "UNKNOWN";
-    }
 
-    return Number(v).toFixed(1) + "%";
-}
+/* ---------------------------------------------------------
+   COMPANY RESEARCH
+--------------------------------------------------------- */
 
-function formatFact(f){
-    if(!f || f.value === null || f.value === undefined){
-        return "UNKNOWN";
-    }
+async function researchCompany() {
 
-    return money(f.value);
-}
+  const input = document.getElementById("company");
+  const q = input.value.trim();
 
-async function research(){
+  if (!q) {
+    showStatus("Enter an institution name or ticker first.", "error");
+    return;
+  }
 
-    const q = $("q").value.trim();
+  const btn = document.getElementById("researchBtn");
 
-    if(!q){
-        alert("Enter an institution name or ticker.");
-        return;
-    }
+  btn.disabled = true;
+  btn.textContent = "Researching...";
 
-    hide("home");
-    hide("results");
-    hide("error");
-    show("loading");
+  showStatus(
+    "Identifying the institution through authoritative public data..."
+  );
 
-    $("progress").textContent =
-        "Identifying the institution through public SEC data...";
+  try {
 
-    try{
-
-        const response = await fetch("/api/company", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                query: q
-            })
-        });
-
-        const data = await response.json();
-
-        if(!response.ok || !data.ok){
-            throw new Error(
-                data.error ||
-                "No reliable public SEC match found."
-            );
+    const response = await fetch(
+      "/api/company?q=" + encodeURIComponent(q),
+      {
+        method: "GET",
+        headers: {
+          "Accept": "application/json"
         }
+      }
+    );
 
-        currentCompany = data;
+    const data = await response.json();
 
-        renderCompany(data);
-
-        hide("loading");
-        show("results");
-
-    }catch(err){
-
-        hide("loading");
-
-        $("errorTitle").textContent =
-            "No reliable public match/data was found";
-
-        $("errorText").textContent =
-            err.message ||
-            "Live public-data retrieval failed. Nothing has been invented.";
-
-        show("error");
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Public-data lookup failed."
+      );
     }
+
+    if (!data || !data.company) {
+      throw new Error(
+        "No reliable public match was found."
+      );
+    }
+
+    currentCompany = data;
+
+    renderCompany(data);
+
+    showStatus(
+      "Institution identified. Public evidence loaded. Unknown technical fields remain unknown."
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    showStatus(
+      error.message ||
+      "No reliable public data was found. Nothing has been invented.",
+      "error"
+    );
+
+  } finally {
+
+    btn.disabled = false;
+    btn.textContent = "Research Institution";
+
+  }
 }
 
-function renderCompany(data){
 
-    const id = data.identity || {};
-    const f = data.financial || {};
+/* ---------------------------------------------------------
+   RENDER COMPANY
+--------------------------------------------------------- */
 
-    $("companyName").textContent =
-        id.name || "UNKNOWN";
+function renderCompany(data) {
 
-    $("companyMeta").textContent =
-        "Ticker: " +
-        (id.ticker || "UNKNOWN") +
-        " · CIK: " +
-        (id.cik || "UNKNOWN");
+  const company = data.company || {};
 
-    $("assets").textContent =
-        formatFact(f.assets);
+  document.getElementById("companyName").textContent =
+    company.name || "UNKNOWN";
 
-    $("revenue").textContent =
-        formatFact(f.revenue);
+  document.getElementById("ticker").textContent =
+    company.ticker || "UNKNOWN";
 
-    $("income").textContent =
-        formatFact(f.net_income);
+  document.getElementById("cik").textContent =
+    company.cik || "UNKNOWN";
 
-    $("equity").textContent =
-        formatFact(f.equity);
+  const facts = data.facts || {};
 
-    const sourceBox = $("sources");
+  document.getElementById("assets").textContent =
+    money(
+      facts.total_assets ??
+      facts.assets
+    );
 
-    sourceBox.innerHTML = "";
+  document.getElementById("revenue").textContent =
+    money(
+      facts.revenue
+    );
 
-    (data.sources || []).forEach(src => {
+  document.getElementById("netIncome").textContent =
+    money(
+      facts.net_income ??
+      facts.netIncome
+    );
 
-        const div = document.createElement("div");
+  document.getElementById("evidenceText").textContent =
+    "SEC public-data identification completed. Technical cryptographic controls are not inferred.";
 
-        div.className = "source";
+  show("profileSection");
+  show("financialSection");
+  show("riskSection");
+  show("evidenceSection");
 
-        const a = document.createElement("a");
-
-        a.href = src.url;
-
-        a.target = "_blank";
-
-        a.rel = "noopener noreferrer";
-
-        a.textContent = src.name;
-
-        div.appendChild(a);
-
-        sourceBox.appendChild(div);
-    });
+  window.scrollTo({
+    top: document.getElementById("profileSection").offsetTop - 20,
+    behavior: "smooth"
+  });
 }
 
-async function calculate(){
 
-    hide("calcError");
+/* ---------------------------------------------------------
+   RISK CALCULATION
+--------------------------------------------------------- */
 
-    const legacy = Number($("legacy").value);
-    const migration = Number($("migration").value);
-    const threat = Number($("threat").value);
-    const event = Number($("event").value);
-    const lossrate = Number($("lossrate").value);
+async function calculateRisk() {
 
-    if(
-        !Number.isFinite(legacy) ||
-        !Number.isFinite(migration) ||
-        !Number.isFinite(threat) ||
-        !Number.isFinite(event) ||
-        !Number.isFinite(lossrate)
-    ){
+  const legacyAssetValue = numberValue("legacyAssetValue");
+  const migrationSpeedPercent = numberValue("migrationSpeed");
+  const threatVector = numberValue("threatVector");
+  const annualLoss = numberValue("annualLoss");
 
-        $("calcError").textContent =
-            "Please enter all required stress-engine inputs.";
+  if (
+    legacyAssetValue === null ||
+    migrationSpeedPercent === null ||
+    threatVector === null
+  ) {
 
-        show("calcError");
+    showStatus(
+      "Enter Legacy Asset Value, Annual Migration Speed and Active Threat Vector. Do not invent values.",
+      "error"
+    );
 
-        return;
-    }
+    return;
+  }
+
+  if (
+    migrationSpeedPercent < 0 ||
+    migrationSpeedPercent > 100 ||
+    threatVector < 0 ||
+    threatVector > 1
+  ) {
+
+    showStatus(
+      "Migration Speed must be 0–100% and Threat Vector must be 0–1.",
+      "error"
+    );
+
+    return;
+  }
+
+  showStatus("Calculating deterministic risk scenario...");
+
+  try {
 
     const payload = {
-        legacy: legacy,
-        migration: migration,
-        threat: threat,
-        event_probability: event,
-        loss_rate: lossrate,
-
-        capex: $("capex").value || null,
-        emergency: $("emergency").value || null,
-        shares: $("shares").value || null,
-        tax: $("tax").value || null
+      legacy_asset_value: legacyAssetValue,
+      migration_speed: migrationSpeedPercent / 100,
+      active_threat_vector: threatVector,
+      annual_loss: annualLoss,
+      institution: currentCompany
+        ? currentCompany.company
+        : null
     };
 
-    try{
+    const response = await fetch(
+      "/api/calculate",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
+      }
+    );
 
-        const response = await fetch("/api/calculate", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
+    const result = await response.json();
 
-        const data = await response.json();
-
-        if(!response.ok || !data.ok){
-            throw new Error(
-                data.error ||
-                "Calculation failed."
-            );
-        }
-
-        renderStress(data.rows || []);
-
-    }catch(err){
-
-        $("calcError").textContent =
-            err.message ||
-            "Calculation failed.";
-
-        show("calcError");
+    if (!response.ok) {
+      throw new Error(
+        result.error || "Calculation failed."
+      );
     }
+
+    renderRisk(result);
+
+    showStatus(
+      "Calculation complete. Results are model outputs based on supplied inputs."
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    /*
+      If the backend calculation response has a different
+      structure, the deterministic local calculation below
+      still provides the transparent scenario engine.
+    */
+
+    calculateLocalRisk(
+      legacyAssetValue,
+      migrationSpeedPercent / 100,
+      threatVector,
+      annualLoss
+    );
+
+  }
 }
 
-function renderStress(rows){
 
-    const tbody =
-        $("stressTable").querySelector("tbody");
+/* ---------------------------------------------------------
+   LOCAL DETERMINISTIC ENGINE
+   Used only when backend calculation response is unavailable.
+--------------------------------------------------------- */
 
-    tbody.innerHTML = "";
+function calculateLocalRisk(
+  lav,
+  migrationSpeed,
+  threatVector,
+  annualLoss
+) {
+
+  const years = [2026, 2027, 2028, 2029, 2030];
+
+  const rows = [];
+
+  years.forEach((year, index) => {
+
+    const residualRatio =
+      Math.pow(
+        1 - migrationSpeed,
+        index
+      );
+
+    const residualExposure =
+      lav * residualRatio;
+
+    const horizonFactor =
+      1 + (0.10 * index);
+
+    const riskScore =
+      Math.min(
+        100,
+        100 *
+        residualRatio *
+        threatVector *
+        horizonFactor
+      );
+
+    rows.push({
+      year,
+      residual_exposure: residualExposure,
+      residual_ratio: residualRatio,
+      risk_score: riskScore
+    });
+
+  });
+
+  let expectedLoss = null;
+
+  if (annualLoss !== null) {
+
+    expectedLoss =
+      annualLoss *
+      threatVector *
+      (1 - migrationSpeed);
+
+  }
+
+  renderRisk({
+    years: rows,
+    expected_loss: expectedLoss
+  });
+
+  showStatus(
+    "Backend response unavailable; transparent deterministic scenario calculation displayed. No public-company values were invented.",
+    "error"
+  );
+}
+
+
+/* ---------------------------------------------------------
+   RENDER RISK RESULTS
+--------------------------------------------------------- */
+
+function renderRisk(result) {
+
+  const rows =
+    result.years ||
+    result.scenarios ||
+    result.results ||
+    [];
+
+  const table =
+    document.getElementById("riskTable");
+
+  table.innerHTML = "";
+
+  if (Array.isArray(rows) && rows.length > 0) {
 
     rows.forEach(row => {
 
-        const tr = document.createElement("tr");
+      const year =
+        row.year ??
+        row.horizon ??
+        "UNKNOWN";
 
-        tr.innerHTML = `
-            <td>${row.year}</td>
-            <td>${money(row.residual)}</td>
-            <td>${money(row.expected_loss)}</td>
-            <td>${percent(row.risk)}</td>
-            <td>${row.emergency_capex === null || row.emergency_capex === undefined
-                ? "UNKNOWN"
-                : money(row.emergency_capex)}</td>
-            <td>${row.eps === null || row.eps === undefined
-                ? "UNKNOWN"
-                : "$" + Number(row.eps).toFixed(4)}</td>
-        `;
+      const exposure =
+        row.residual_exposure ??
+        row.residualExposure;
 
-        tbody.appendChild(tr);
+      const ratio =
+        row.residual_ratio ??
+        row.residualRatio;
+
+      const score =
+        row.risk_score ??
+        row.riskScore;
+
+      const tr =
+        document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${year}</td>
+        <td>${money(exposure)}</td>
+        <td>${
+          ratio === undefined ||
+          ratio === null
+            ? "UNKNOWN"
+            : (Number(ratio) * 100).toFixed(1) + "%"
+        }</td>
+        <td>${
+          score === undefined ||
+          score === null
+            ? "UNKNOWN"
+            : Number(score).toFixed(1)
+        }</td>
+      `;
+
+      table.appendChild(tr);
+
     });
+
+  } else {
+
+    table.innerHTML = `
+      <tr>
+        <td colspan="4">
+          No scenario rows returned.
+        </td>
+      </tr>
+    `;
+
+  }
+
+
+  const first =
+    rows.length
+      ? rows[0]
+      : null;
+
+  const last =
+    rows.length
+      ? rows[rows.length - 1]
+      : null;
+
+
+  document.getElementById("risk2026").textContent =
+    first &&
+    (first.risk_score ??
+     first.riskScore) !== undefined
+      ? Number(
+          first.risk_score ??
+          first.riskScore
+        ).toFixed(1)
+      : "UNKNOWN";
+
+
+  document.getElementById("risk2030").textContent =
+    last &&
+    (last.risk_score ??
+     last.riskScore) !== undefined
+      ? Number(
+          last.risk_score ??
+          last.riskScore
+        ).toFixed(1)
+      : "UNKNOWN";
+
+
+  const loss =
+    result.expected_loss ??
+    result.expectedLoss;
+
+  document.getElementById("expectedLoss").textContent =
+    money(loss);
+
+  document.getElementById("stressLoss").textContent =
+    money(loss);
+
+
+  const capex =
+    result.emergency_capex ??
+    result.emergencyCapex;
+
+  document.getElementById("emergencyCapex").textContent =
+    money(capex);
+
+
+  const eps =
+    result.eps_sensitivity ??
+    result.epsSensitivity;
+
+  document.getElementById("epsSensitivity").textContent =
+    eps === undefined ||
+    eps === null
+      ? "UNKNOWN"
+      : Number(eps).toFixed(4);
+
+
+  show("dashboardSection");
+  show("financialStressSection");
+
+  window.scrollTo({
+    top:
+      document.getElementById(
+        "dashboardSection"
+      ).offsetTop - 20,
+    behavior: "smooth"
+  });
 }
 
-function resetHome(){
 
-    hide("error");
-    hide("loading");
-    hide("results");
+/* ---------------------------------------------------------
+   ENTER KEY
+--------------------------------------------------------- */
 
-    show("home");
+document
+  .getElementById("company")
+  .addEventListener(
+    "keydown",
+    function(event) {
 
-    $("q").focus();
-}
+      if (event.key === "Enter") {
+        researchCompany();
+      }
+
+    }
+  );
 
 </script>
 
 </body>
-  </html>
+            </html>
